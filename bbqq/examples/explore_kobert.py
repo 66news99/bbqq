@@ -5,7 +5,7 @@ from transformers import AutoTokenizer, AutoModel, BertTokenizer
 from typing import List, Tuple
 import torch
 from torch.nn import functional as F
-from kobert_tokenizer import KoBERTTokenizer
+# from kobert_tokenizer import KoBERTTokenizer
 
 #transformers
 from transformers import AdamW
@@ -16,9 +16,16 @@ device = torch.device("cuda:0")
 
 
 DATA: List[Tuple[str, str]] = [
-    ("이재명씨.", "a")
+    ("김 총리 “현행 거리두기 2주 연장…사적모임제한 유지”", "a"),
+    ("靑 \"日총리 취임후 정상 통화 검토\"…정상회담 재추진 계기 주목", "a"),
+    ("\"커피만 팔았을 뿐인데\"… 모호한 규정속 애타는 '커피숍'”", "b"),
+    ("[스트레이트 예고] 당첨자 명단 단독 입수 \"엘시티, 빈 칸 세대의 비밀\"", "c")
 ]
 
+
+sents = [sent for sent, label in DATA]
+    # 레이블
+labels = [label for sent, label in DATA]
 
 
 
@@ -36,6 +43,7 @@ class BERTClassifier(torch.nn.Module):
         self.classifier = nn.Linear(hidden_size, num_classes)
         if dr_rate:
             self.dropout = nn.Dropout(p=dr_rate)  # 신경망의 일반화 성능을 높이기 위해 자주 쓰이는 테크닉 중 하나
+            #일부 파라미터를 학습에 반영하지 않음으로써 모델을 일반화하는 방법 Train시에는 Dropout을 적용해야
 
     def gen_attention_mask(self, token_ids, valid_length):
         attention_mask = torch.zeros_like(token_ids)
@@ -50,13 +58,13 @@ class BERTClassifier(torch.nn.Module):
                               attention_mask=attention_mask.float().to(token_ids.device))
         if self.dr_rate:
             out = self.dropout(pooler)
-        return self.classifier(out)
+        return self.classifier(out) ##?????
 
     # 아직 수정 못했습니다.
     def training_step(self, X: torch.Tensor, M: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
         y_pred, _ = self.predict(X, M)  # (N, L) -> (N, 1)
         y_pred = torch.reshape(y_pred, y.shape)  # y와 차원의 크기를 동기화
-        loss = F.binary_cross_entropy(y_pred, y)  # 이진분류 로스
+        loss = nn.CrossEntropyLoss(y_pred, y)  # 분류 로스
         loss = loss.sum()  # 배치 속 모든 데이터 샘플에 대한 로스를 하나로
         return loss
 
@@ -68,6 +76,7 @@ def build_X(sents: List[str], tokenizer: Tokenizer, max_length: int) -> Tuple[to
     X = torch.LongTensor(seqs)  # (N, L)
     return X
 
+##????
 def build_X_M(sents: List[str], tokenizer: Tokenizer, max_length: int) -> Tuple[torch.Tensor, torch.Tensor]:
     seqs = tokenizer.texts_to_sequences(texts=sents)
     seqs = pad_sequences(sequences=seqs, padding="post", maxlen=max_length, value=0)
@@ -76,12 +85,6 @@ def build_X_M(sents: List[str], tokenizer: Tokenizer, max_length: int) -> Tuple[
     ##############
     return torch.stack([X, M])  # (N, L), (N, L)
 
-
-def gen_attention_mask(self, token_ids, valid_length):
-    attention_mask = torch.zeros_like(token_ids)
-    for i, v in enumerate(valid_length):
-        attention_mask[i][:v] = 1
-    return attention_mask.float()
 
 
 def build_y(labels: List[int]) -> torch.Tensor:
@@ -93,10 +96,10 @@ def main():
     model = AutoModel.from_pretrained("monologg/kobert")
 
 
-
-
 if __name__ == '__main__':
     main()
+
+#-----------------------------
 
 
 
@@ -198,3 +201,4 @@ def calc_accuracy(X,Y):
 #         out = model(token_ids, valid_length, segment_ids)
 #         test_acc += calc_accuracy(out, label)
 #     print("epoch {} test acc {}".format(e + 1, test_acc / (batch_id + 1)))
+
