@@ -110,15 +110,7 @@ def calc_accuracy(X,Y):
     train_acc = (max_indices == Y).sum().data.cpu().numpy()/max_indices.size()[0]
     return train_acc
 
-class SimpleSentimentAnalyser:
-    def __init__(self, model: BBQQClassifer, tokenizer: BertTokenizer):
-        # rnn과, 학습된 토크나이저를 입력으로 받는다.
-        self.model = model
-        self.tokenizer = tokenizer
 
-    def __call__(self, text: str) -> float:
-        X = build_X(sents=[text], tokenizer=self.tokenizer)
-        return self.model.predict(X)
 
 def main():
     global batch_size, EPOCHS, hidden_dim
