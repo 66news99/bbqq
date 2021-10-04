@@ -1,14 +1,21 @@
-from transformers import BertTokenizer
+import pandas as pd
+import torch.nn
+from typing import List, Tuple
+from transformers import BertTokenizer, BertModel
+from torch.nn import functional as F
+
+title_data = pd.read_csv(r'C:\Users\jeonguihyeong\PycharmProjects\bbqq\title.csv')
+
+
 
 def main():
-    tokenizer = BertTokenizer.from_pretrained("monologg/kobert")
-    sent = "뉴스기사"
-    print(tokenizer.tokenize(sent))
-    print(tokenizer.decode(2))
-    print(tokenizer.decode(0))
-    print(tokenizer.decode(3))
-
-
+    title_data.loc[(title_data['label'] == "a"), 'label'] = 0
+    title_data.loc[(title_data['label'] == "b"), 'label'] = 1
+    title_data.loc[(title_data['label'] == "c"), 'label'] = 2
+    list_from_df = title_data.values.tolist()
+    print(title_data)
+    print(list_from_df[:10])
 
 if __name__ == '__main__':
     main()
+
