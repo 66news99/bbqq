@@ -2,7 +2,7 @@ import torch
 from torch.nn import functional as F
 
 
-class BBQQClassifer(torch.nn.Module):
+class bbqqClassifer(torch.nn.Module):
     def __init__(self, hidden_size : int, hidden_dim : int):
         super(BBQQClassifer, self).__init__()
         # self.bert = bert
