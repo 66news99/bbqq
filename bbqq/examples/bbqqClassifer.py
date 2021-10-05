@@ -4,7 +4,7 @@ from torch.nn import functional as F
 
 class bbqqClassifer(torch.nn.Module):
     def __init__(self, hidden_size : int, hidden_dim : int):
-        super(BBQQClassifer, self).__init__()
+        super(bbqqClassifer, self).__init__()
         # self.bert = bert
         self.hidden_size = hidden_size
         self.hidden_dim = hidden_dim

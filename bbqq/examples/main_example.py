@@ -13,7 +13,7 @@ from bbqq.examples.train import train
 
 
 
-device = torch.device("cuda:0")
+# device = torch.device("cuda:0")
 
 DATA: List[Tuple[str, int]] = [
     ("김 총리 “현행 거리두기 2주 연장…사적모임제한 유지”", 0),
@@ -58,19 +58,39 @@ def main():
     H_all = Out['last_hidden_state'] #cls-김-총리-.. (L, H)
     H_cls = H_all[: , 0]  # (N, L, H) -> (N, H)
     X = H_cls
+    print(X)
+
     #---------------------------------------------------------
 
-    x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=True, stratify=y, random_state=34)
+    x_train, x_test, y_train, y_test = train_test_split(X, y,
+                                                        test_size = 0.2,
+                                                        shuffle = True,
+                                                        stratify = y,
+                                                        random_state = 34)
+
     hidden_size = H_all.shape[2]
     train_dataset = SimpleDataset(x_train, y_train)
     test_dataset = SimpleDataset(x_test, y_test)
 
-    model = bbqqClassifer(hidden_size=hidden_size, hidden_dim=hidden_dim)
-    optimizer = optim.AdamW(params=model.parameters(), lr=learning_rate)
-    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True)
+    model = bbqqClassifer(hidden_size=hidden_size,
+                          hidden_dim=hidden_dim)
+    optimizer = optim.AdamW(params=model.parameters(),
+                            lr=learning_rate)
+
+    train_dataloader = DataLoader(dataset = train_dataset,
+                                  batch_size = batch_size,
+                                  shuffle = True)
+    test_dataloader = DataLoader(dataset = test_dataset,
+                                 batch_size=batch_size,
+                                 shuffle=True)
+
     #------------------------------ train & test ---------------------------------
-    train(train_dataloader=train_dataloader, test_dataloader=test_dataloader, model=model, EPOCHS=EPOCHS, optimizer=optimizer, log_interval=log_interval)
+
+    train(train_dataloader = train_dataloader,
+          test_dataloader = test_dataloader,
+          model = model, EPOCHS = EPOCHS,
+          optimizer = optimizer,
+          log_interval = log_interval)
 
 if __name__ == '__main__':
     main()
