@@ -54,7 +54,8 @@ def main():
     X = Build_X(sents, tokenizer)
     y = Build_y(labels)
     # -------------------여기부분을 수정해야함--------------------
-    Out = bertmodel(**X)
+    Out = bertmodel(**X)  # 코랩에서 실행시 이부분에서 메모리 용량초과로 종료됨.
+                          # 그래서 데이터양이 적은 예시 데이터를 사용하고있음
     H_all = Out['last_hidden_state'] #cls-김-총리-.. (L, H)
     H_cls = H_all[: , 0]  # (N, L, H) -> (N, H)
     X = H_cls
@@ -68,12 +69,18 @@ def main():
                                                         stratify = y,
                                                         random_state = 34)
 
+    # train_test_split 사용시 예시 데이터가 부족하여 에러가 발생하므로,
+    # train_test_split부분을 주석 처리하고 아래 코드주석을 해제한 뒤 사용바람
+    # x_train, x_test = X[:6], X[6:]
+    # y_train, y_test = y[:6], y[6:]
+
     hidden_size = H_all.shape[2]
     train_dataset = SimpleDataset(x_train, y_train)
     test_dataset = SimpleDataset(x_test, y_test)
 
     model = bbqqClassifer(hidden_size=hidden_size,
                           hidden_dim=hidden_dim)
+
     optimizer = optim.AdamW(params=model.parameters(),
                             lr=learning_rate)
 
@@ -88,7 +95,8 @@ def main():
 
     train(train_dataloader = train_dataloader,
           test_dataloader = test_dataloader,
-          model = model, EPOCHS = EPOCHS,
+          model = model,
+          EPOCHS = EPOCHS,
           optimizer = optimizer,
           log_interval = log_interval)
 

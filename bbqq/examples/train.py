@@ -34,4 +34,4 @@ def train(EPOCHS=None, model=None, train_dataloader=None, test_dataloader=None, 
         X, y = batch
         y_hat = model.forward(X)
         test_acc += calc_accuracy(y_hat, y)
-    print(f"epoch {e_idx} test acc {test_acc}" )
+    print(f"epoch {e_idx+1} test acc {test_acc}" )
