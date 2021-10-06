@@ -5,11 +5,10 @@
 from typing import List, Tuple
 
 import torch
-from torch import nn
 from transformers import BertModel, BertTokenizer
 
-from bbqq.examples.main_example import Build_X, Build_y
-from torch.utils.data import Dataset, DataLoader
+from bbqq.main import Build_X, Build_y
+from torch.utils.data import Dataset
 
 model = BertModel.from_pretrained("monologg/kobert")
 tokenizer = BertTokenizer.from_pretrained("monologg/kobert")

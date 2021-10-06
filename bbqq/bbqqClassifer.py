@@ -3,23 +3,28 @@ from torch.nn import functional as F
 
 
 class bbqqClassifer(torch.nn.Module):
-    def __init__(self, hidden_size : int, hidden_dim : int):
+    def __init__(self, hidden_size : int, num_class : int, dr_rate=None):
         super(bbqqClassifer, self).__init__()
         # self.bert = bert
         self.hidden_size = hidden_size
-        self.hidden_dim = hidden_dim
-        self.linear1 = torch.nn.Linear(self.hidden_size, hidden_dim) # h_all.shape[2] = 768, class_num = 3  (h,3)
-        self.linear2 = torch.nn.Linear(hidden_dim, 3)
+        # self.hidden_dim = hidden_dim
+        self.linear1 = torch.nn.Linear(self.hidden_size, num_class) # h_all.shape[2] = 768, class_num = 3  (h,3)
+        # self.linear2 = torch.nn.Linear(hidden_dim, 3)
+        if dr_rate:
+            self.dropout = torch.nn.Dropout(p=dr_rate)
 
-    def forward(self, X, apply_softmax=None):
+    def forward(self, X, apply_softmax = None):
         """
-        :param x_in: 입력 데이터 텐서
+        :param X:
+        :param apply_softmax:
         :return:
         """
-        intermediate = F.relu(self.linear1(X))
-        out_put = F.softmax(self.linear2(intermediate), dim=1) #
-        # if apply_softmax:
-        #     out_put= F.softmax(out_put, dim=1)
+        # intermediate = F.relu(self.linear1(X))
+        # out_put = F.softmax(self.linear2(intermediate), dim=1) #
+        if apply_softmax:
+            out_put = F.softmax(self.linear1(X), dim = 1)
+        else:
+            out_put = self.linear1(X)
         return out_put  # (n, 3)??
 
     def training_step(self, X, y):

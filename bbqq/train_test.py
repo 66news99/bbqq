@@ -8,7 +8,8 @@ def calc_accuracy(X,Y):
     return train_acc
 
 
-def train(EPOCHS=None, model=None, train_dataloader=None, test_dataloader=None, optimizer=None, log_interval=None):
+def train_test(EPOCHS=None, model=None, train_dataloader=None, test_dataloader=None, optimizer=None, log_interval=None,
+          max_grad_norm=None, scheduler=None):
     for e_idx, epoch in enumerate(range(EPOCHS)):
         losses = list()
         train_acc = 0.0
@@ -21,7 +22,9 @@ def train(EPOCHS=None, model=None, train_dataloader=None, test_dataloader=None, 
             y_hat = model.forward(X)
             optimizer.zero_grad()  # resetting the gradients.
             loss.backward(retain_graph=True)  # backprop the loss
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
             optimizer.step()  # gradient step
+            scheduler.step()
             train_acc += calc_accuracy(y_hat, y)
             losses.append(loss.item())
         avg_loss = (sum(losses) / len(losses))

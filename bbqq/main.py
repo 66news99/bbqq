@@ -1,15 +1,16 @@
-import torch.nn
 from typing import List, Tuple
-from sklearn.model_selection import train_test_split
 
+from sklearn.model_selection import train_test_split
 from torch import optim
 from transformers import BertTokenizer, BertModel
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 
-from bbqq.examples.bbqqClassifer import bbqqClassifer
-from bbqq.examples.Builder import Build_X, Build_y
-from bbqq.examples.SimpleDataset import SimpleDataset
-from bbqq.examples.train import train
+from bbqq.bbqqClassifer import bbqqClassifer
+from bbqq.Builder import Build_X, Build_y
+from bbqq.SimpleDataset import SimpleDataset
+from bbqq.train_test import train_test
+from transformers.optimization import get_cosine_schedule_with_warmup
+
 
 
 
@@ -44,8 +45,9 @@ def main():
     max_grad_norm = 1
     log_interval = 200
     learning_rate = 5e-5
-    hidden_dim = 300
-    # 여기부터
+    num_class = 3
+
+
     bertmodel = BertModel.from_pretrained("monologg/kobert")
     tokenizer = BertTokenizer.from_pretrained("monologg/kobert")
 
@@ -56,8 +58,10 @@ def main():
     # -------------------여기부분을 수정해야함--------------------
     Out = bertmodel(**X)  # 코랩에서 실행시 이부분에서 메모리 용량초과로 종료됨.
                           # 그래서 데이터양이 적은 예시 데이터를 사용하고있음
+
     H_all = Out['last_hidden_state'] #cls-김-총리-.. (L, H)
     H_cls = H_all[: , 0]  # (N, L, H) -> (N, H)
+    hidden_size = H_all.shape[2]
     X = H_cls
     print(X)
 
@@ -74,31 +78,46 @@ def main():
     # x_train, x_test = X[:6], X[6:]
     # y_train, y_test = y[:6], y[6:]
 
-    hidden_size = H_all.shape[2]
+
     train_dataset = SimpleDataset(x_train, y_train)
     test_dataset = SimpleDataset(x_test, y_test)
-
-    model = bbqqClassifer(hidden_size=hidden_size,
-                          hidden_dim=hidden_dim)
-
-    optimizer = optim.AdamW(params=model.parameters(),
-                            lr=learning_rate)
-
-    train_dataloader = DataLoader(dataset = train_dataset,
-                                  batch_size = batch_size,
-                                  shuffle = True)
-    test_dataloader = DataLoader(dataset = test_dataset,
+    train_dataloader = DataLoader(dataset=train_dataset,
+                                  batch_size=batch_size,
+                                  shuffle=True)
+    test_dataloader = DataLoader(dataset=test_dataset,
                                  batch_size=batch_size,
                                  shuffle=True)
 
+    classfer = bbqqClassifer(hidden_size=hidden_size,
+                             num_class=num_class,
+                             dr_rate=0.5)
+
+    # optimizer와 schedule 설정
+    no_decay = ['bias', 'LayerNorm.weight']
+    optimizer_grouped_parameters = [
+        {'params': [p for n, p in classfer.named_parameters() if not any(nd in n for nd in no_decay)],
+         'weight_decay': 0.01},
+        {'params': [p for n, p in classfer.named_parameters() if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
+    ]
+    optimizer = optim.AdamW(params=optimizer_grouped_parameters,
+                            lr=learning_rate)
+
+    t_total = len(train_dataloader) * EPOCHS
+    warmup_step = int(t_total * warmup_ratio)
+    scheduler = get_cosine_schedule_with_warmup(optimizer, num_warmup_steps=warmup_step, num_training_steps=t_total)
+
+
+
     #------------------------------ train & test ---------------------------------
 
-    train(train_dataloader = train_dataloader,
-          test_dataloader = test_dataloader,
-          model = model,
-          EPOCHS = EPOCHS,
-          optimizer = optimizer,
-          log_interval = log_interval)
+    train_test(train_dataloader = train_dataloader,
+               test_dataloader = test_dataloader,
+               model = classfer,
+               EPOCHS = EPOCHS,
+               optimizer = optimizer,
+               log_interval = log_interval,
+               max_grad_norm=max_grad_norm,
+               scheduler=scheduler)
 
 if __name__ == '__main__':
     main()
