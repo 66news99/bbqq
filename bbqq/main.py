@@ -1,8 +1,10 @@
 from typing import List, Tuple
 
+import pandas as pd
+import torch
 from sklearn.model_selection import train_test_split
 from torch import optim
-from transformers import BertTokenizer, BertModel
+from transformers import AutoTokenizer, AutoModel
 from torch.utils.data import DataLoader
 
 from bbqq.bbqqClassifer import bbqqClassifer
@@ -16,23 +18,23 @@ from transformers.optimization import get_cosine_schedule_with_warmup
 
 # device = torch.device("cuda:0")
 
-DATA: List[Tuple[str, int]] = [
-    ("김 총리 “현행 거리두기 2주 연장…사적모임제한 유지”", 0),
-    ("靑 \"日총리 취임후 정상 통화 검토\"…정상회담 재추진 계기 주목", 0),
-    ("\"커피만 팔았을 뿐인데\"… 모호한 규정속 애타는 '커피숍'", 1),
-    ("[스트레이트 예고] 당첨자 명단 단독 입수 \"엘시티, 빈 칸 세대의 비밀\"", 2),
-    ("세 동강 난 인니 침몰 잠수함…\"탑승자 53명 전원사망\"",0),
-    ("중금리대출 확대 \"올해 200만 명에 32조 원 공급\"",0),
-    ("홍준표 \"권영진 시장, 무겁고 신중하게 처신하라\" 일침",1),
-    ("\"경찰이 왜 이래\"..술 취해 길가던 여성 껴안아 입건",1),
-    ("아사히 \"1년 남아 다급한 文정부, 남북 협력사업 모색 중\"",1),
+# DATA: List[Tuple[str, int]] = [
+#     ("김 총리 “현행 거리두기 2주 연장…사적모임제한 유지”", 0),
+#     ("靑 \"日총리 취임후 정상 통화 검토\"…정상회담 재추진 계기 주목", 0),
+#     ("\"커피만 팔았을 뿐인데\"… 모호한 규정속 애타는 '커피숍'", 1),
+#     ("[스트레이트 예고] 당첨자 명단 단독 입수 \"엘시티, 빈 칸 세대의 비밀\"", 2),
+#     ("세 동강 난 인니 침몰 잠수함…\"탑승자 53명 전원사망\"",0),
+#     ("중금리대출 확대 \"올해 200만 명에 32조 원 공급\"",0),
+#     ("홍준표 \"권영진 시장, 무겁고 신중하게 처신하라\" 일침",1),
+#     ("\"경찰이 왜 이래\"..술 취해 길가던 여성 껴안아 입건",1),
+#     ("아사히 \"1년 남아 다급한 文정부, 남북 협력사업 모색 중\"",1),
+# ]
 
-]
-# DATA = pd.read_csv(r'C:\Users\jeonguihyeong\PycharmProjects\bbqq\title.csv')
-# DATA.loc[(DATA['label'] == "a"), 'label'] = 0
-# DATA.loc[(DATA['label'] == "b"), 'label'] = 1
-# DATA.loc[(DATA['label'] == "c"), 'label'] = 2
-# DATA = DATA.values.tolist()
+DATA = pd.read_csv(r'C:\Users\jeonguihyeong\PycharmProjects\bbqq\title.csv')
+DATA.loc[(DATA['label'] == "a"), 'label'] = 0
+DATA.loc[(DATA['label'] == "b"), 'label'] = 1
+DATA.loc[(DATA['label'] == "c"), 'label'] = 2
+DATA = DATA.values.tolist()
 
 
 
@@ -40,6 +42,7 @@ DATA: List[Tuple[str, int]] = [
 def main():
 
     test_size = 0.3
+    random_state = 13
     batch_size = 27
     warmup_ratio = 0.1
     EPOCHS = 5
@@ -47,24 +50,15 @@ def main():
     log_interval = 200
     learning_rate = 6e-6
     num_class = 3
-    random_state = 13
 
-
-    bertmodel = BertModel.from_pretrained("monologg/kobert")
-    tokenizer = BertTokenizer.from_pretrained("monologg/kobert")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    bertmodel = AutoModel.from_pretrained("monologg/kobert")
+    tokenizer = AutoTokenizer.from_pretrained("monologg/kobert")
 
     sents = [sent for sent, _ in DATA]
     labels = [label for _, label in DATA]
-    X = Build_X(sents, tokenizer)
-    y = Build_y(labels)
-
-    Out = bertmodel(**X)
-
-    H_all = Out['last_hidden_state'] #cls-김-총리-.. (L, H)
-    H_cls = H_all[: , 0]  # (N, L, H) -> (N, H)
-    hidden_size = H_all.shape[2]
-    X = H_cls
-    print(X)
+    X = Build_X(sents, tokenizer, device)
+    y = Build_y(labels, device)
 
     #---------------------------------------------------------
 
@@ -75,8 +69,8 @@ def main():
                                                         random_state = random_state)
 
 
-    # x_train, x_test = X[:6], X[6:]
-    # y_train, y_test = y[:6], y[6:]
+    #x_train, x_test = X[:6], X[6:]
+    #y_train, y_test = y[:6], y[6:]
 
 
     train_dataset = SimpleDataset(x_train, y_train)
@@ -88,9 +82,7 @@ def main():
                                  batch_size=batch_size,
                                  shuffle=True)
 
-    classfer = bbqqClassifer(hidden_size=hidden_size,
-                             num_class=num_class,
-                             dr_rate=0.5)
+    classfer = bbqqClassifer(bertmodel, num_class=num_class)
 
     # optimizer와 schedule 설정
     no_decay = ['bias', 'LayerNorm.weight']
