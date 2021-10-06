@@ -39,13 +39,15 @@ DATA: List[Tuple[str, int]] = [
 
 def main():
 
-    batch_size = 64
+    test_size = 0.3
+    batch_size = 27
     warmup_ratio = 0.1
     EPOCHS = 5
     max_grad_norm = 1
     log_interval = 200
-    learning_rate = 5e-5
+    learning_rate = 6e-6
     num_class = 3
+    random_state = 13
 
 
     bertmodel = BertModel.from_pretrained("monologg/kobert")
@@ -55,9 +57,8 @@ def main():
     labels = [label for _, label in DATA]
     X = Build_X(sents, tokenizer)
     y = Build_y(labels)
-    # -------------------여기부분을 수정해야함--------------------
-    Out = bertmodel(**X)  # 코랩에서 실행시 이부분에서 메모리 용량초과로 종료됨.
-                          # 그래서 데이터양이 적은 예시 데이터를 사용하고있음
+
+    Out = bertmodel(**X)
 
     H_all = Out['last_hidden_state'] #cls-김-총리-.. (L, H)
     H_cls = H_all[: , 0]  # (N, L, H) -> (N, H)
@@ -68,13 +69,12 @@ def main():
     #---------------------------------------------------------
 
     x_train, x_test, y_train, y_test = train_test_split(X, y,
-                                                        test_size = 0.2,
+                                                        test_size = test_size,
                                                         shuffle = True,
                                                         stratify = y,
-                                                        random_state = 34)
+                                                        random_state = random_state)
 
-    # train_test_split 사용시 예시 데이터가 부족하여 에러가 발생하므로,
-    # train_test_split부분을 주석 처리하고 아래 코드주석을 해제한 뒤 사용바람
+
     # x_train, x_test = X[:6], X[6:]
     # y_train, y_test = y[:6], y[6:]
 
