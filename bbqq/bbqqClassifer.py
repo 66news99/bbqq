@@ -34,6 +34,7 @@ class bbqqClassifer(torch.nn.Module):
         :param y:
         :return: loss
         '''
+        y = torch.LongTensor(y)
         y_pred = self.predict(X)
         # loss
         loss = F.cross_entropy(y_pred, y).sum()
