@@ -54,7 +54,7 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     bertmodel = AutoModel.from_pretrained("monologg/kobert")
     tokenizer = AutoTokenizer.from_pretrained("monologg/kobert")
-
+    print(DATA[:2])
     sents = [sent for sent, _ in DATA]
     labels = [label for _, label in DATA]
     X = Build_X(sents, tokenizer, device)
@@ -86,13 +86,11 @@ def main():
 
     # optimizer와 schedule 설정
     no_decay = ['bias', 'LayerNorm.weight']
-    optimizer_grouped_parameters = [
-        {'params': [p for n, p in classfer.named_parameters() if not any(nd in n for nd in no_decay)],
-         'weight_decay': 0.01},
-        {'params': [p for n, p in classfer.named_parameters() if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
-    ]
-    optimizer = optim.AdamW(params=optimizer_grouped_parameters,
-                            lr=learning_rate)
+    optimizer_grouped_parameters = \
+        [  {'params': [p for n, p in classfer.named_parameters() if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
+           {'params': [p for n, p in classfer.named_parameters() if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}  ]
+
+    optimizer = optim.AdamW(params=optimizer_grouped_parameters, lr=learning_rate)
 
     t_total = len(train_dataloader) * EPOCHS
     warmup_step = int(t_total * warmup_ratio)

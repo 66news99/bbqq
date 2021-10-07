@@ -25,7 +25,7 @@ class bbqqClassifer(torch.nn.Module):
         H_all = self.forward(X) # N, L, H
         H_cls = H_all[:, 0, :] # 한개만 가져오니까 N,H
         y_hat = self.linear(H_cls)# N,H  H,3 -> N,3
-        y_hat = torch.sigmoid(y_hat)# N,3
+        #y_hat = torch.sigmoid(y_hat)# N,3
         return y_hat #N,3
 
     def training_step(self, X, y):
