@@ -2,26 +2,27 @@ from typing import Tuple, List
 
 import pandas as pd
 import torch
+import torch.nn.functional as F
 from transformers import BertTokenizer, BertModel
 
 from transformers import AutoTokenizer, AutoModel
 
-
-
+from bbqq.Builder import Build_X
 
 USE_CUDA = torch.cuda.is_available()
 print(USE_CUDA)
 
-device = torch.device('cuda:0' if USE_CUDA else 'cpu')
+#device = torch.device('cuda:0' if USE_CUDA else 'cpu')
+device = torch.device('cpu')
 print('학습을 진행하는 기기:',device)
 
-df = pd.read_csv(r'C:\Users\jeonguihyeong\PycharmProjects\bbqq\title.csv')
-print(df)
-df.loc[(df['label'] == "a"), 'label'] = 0
-df.loc[(df['label'] == "b"), 'label'] = 1
-df.loc[(df['label'] == "c"), 'label'] = 2
-DATA = df.values.tolist()
-print(DATA[0])
+# df = pd.read_csv(r'C:\Users\jeonguihyeong\PycharmProjects\bbqq\title.csv')
+# print(df)
+# df.loc[(df['label'] == "a"), 'label'] = 0
+# df.loc[(df['label'] == "b"), 'label'] = 1
+# df.loc[(df['label'] == "c"), 'label'] = 2
+# DATA = df.values.tolist()
+# print(DATA[0])
 
 bertmodel = BertModel.from_pretrained("monologg/kobert")
 tokenizer = BertTokenizer.from_pretrained("monologg/kobert")
@@ -33,8 +34,8 @@ tokenizer = BertTokenizer.from_pretrained("monologg/kobert")
 #
 # model2 = AutoModel.from_pretrained("skt/kobert-base-v1")
 #
-# print(model2.config)
-# print(model2.config.hidden_size)
+# print(bertmodel.config)
+# print(bertmodel.config.hidden_size)
 
 # import numpy as np
 # a= np.array([1,2,3,4])
@@ -57,9 +58,38 @@ DATA: List[Tuple[str, int]] = [
     ("\"경찰이 왜 이래\"..술 취해 길가던 여성 껴안아 입건",1),
     ("아사히 \"1년 남아 다급한 文정부, 남북 협력사업 모색 중\"",1),
  ]
+# z = torch.rand(3, 5, requires_grad=True)
+# hypothesis = F.softmax(z, dim=1)
+# print(hypothesis)
+# y_hat = torch.max(hypothesis, 1)
+# print(y_hat)
 
-sents = [sent for sent, _ in DATA]
+import numpy as np
 
-X = tokenizer(sents, padding=True, truncation=True, return_tensors='pt')
+import sklearn.metrics as metrics
 
-print(X)
+model = torch.load(r'C:\Users\jeonguihyeong\PycharmProjects\bbqq\bbqq\model.pth')
+#DATA =["靑 \"日총리 취임후 정상 통화 검토\"…정상회담 재추진 계기 주목"]
+DATA = ["\"문의 전화 20분 넘게 기다려요!\"…재택치료 아직 준비 부족, 환자도 의료진도 \'불안\'"]
+
+def predict(model, DATA):
+    X = Build_X(DATA, tokenizer, device)
+    y_hat = model.predict(X)
+    y_hat = F.softmax(y_hat, dim=1)
+
+    test_eval = []
+    for i in y_hat:
+
+        logits = i
+        logits = np.round(logits.detach().cpu().numpy(), 2)
+
+        print(logits)
+        if np.argmax(logits) == 0:
+            test_eval.append("판단유보")
+        elif np.argmax(logits) == 1:
+            test_eval.append("책임회피")
+        elif np.argmax(logits) == 2:
+            test_eval.append("선정주의")
+    print(">> 이타이틀은 판단유보 {:.2f}, 책임회피 {:.2f}, 선정주의 {:.2f} 으로 측정되어 {}유형의 따옴표입니다".format(logits[0], logits[1], logits[2],
+                                                                                       test_eval[0]))
+predict(model, DATA)
