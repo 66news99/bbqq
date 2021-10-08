@@ -34,10 +34,8 @@ class bbqqClassifer(torch.nn.Module):
         :param y:
         :return: loss
         '''
-        y = torch.LongTensor(y)  # gpu사용시 이부분에서 에러가 발생 expected Tensor option ( cpu // got gpu )
-
+        #y = torch.LongTensor(y)
         y_pred = self.predict(X)
         # loss
         loss = F.cross_entropy(y_pred, y).sum()
         return loss
-

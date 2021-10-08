@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader
 from bbqq.bbqqClassifer import bbqqClassifer
 from bbqq.Builder import Build_X, Build_y
 from bbqq.SimpleDataset import SimpleDataset
-from bbqq.train_test import train_test, train_test_2
+from bbqq.train_test import train_test
 from transformers.optimization import get_cosine_schedule_with_warmup, AdamW
 
 # device = torch.device("cuda:0")
@@ -41,16 +41,18 @@ def main():
     test_size = 0.3
     random_state = 13
     batch_size = 64
-    EPOCHS = 5
+    EPOCHS = 10
     learning_rate = 5e-5
     num_class = 3
     max_grad_norm = 1
     warmup_ratio = 0.1
+    log_interval = 200
 
     USE_CUDA = torch.cuda.is_available()
     print(USE_CUDA)
 
-    device = torch.device("cpu")
+    # device = torch.device('cuda:0' if USE_CUDA else 'cpu')
+    device = torch.device('cpu')
     print('학습을 진행하는 기기:', device)
     bertmodel = AutoModel.from_pretrained("monologg/kobert")
     tokenizer = AutoTokenizer.from_pretrained("monologg/kobert")
@@ -96,19 +98,15 @@ def main():
 
     #------------------------------ train & test ---------------------------------
     print('학습시작')
-    train_test(train_dataloader = train_dataloader,
-               test_dataloader = test_dataloader,
-               model = classfer,
-               EPOCHS = EPOCHS,
-               optimizer = optimizer,
-               max_grad_norm= max_grad_norm,
-               scheduler=scheduler)
+    train_test(train_dataloader=train_dataloader,
+               test_dataloader=test_dataloader,
+               model=classfer,
+               EPOCHS=EPOCHS,
+               optimizer=optimizer,
+               max_grad_norm=max_grad_norm,
+               scheduler=scheduler,
+               log_interval=log_interval)
 
-    #train_test_2(train_dataloader=train_dataloader,
-    #           test_dataloader=test_dataloader,
-    #           model=classfer,
-    #           EPOCHS=EPOCHS,
-    #           optimizer=optimizer)
 
 if __name__ == '__main__':
     main()
