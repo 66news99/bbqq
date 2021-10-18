@@ -8,7 +8,7 @@ class bbqqClassifer(torch.nn.Module):
         super().__init__()
         self.bert = bert
         self.H = bert.config.hidden_size
-        self.W_hy = torch.nn.Linear(self.H, num_class) # (H, 3)
+        self.W_hy = torch.nn.Linear(self.H, num_class)
         self.to(device)
 
     def forward(self, X: torch.Tensor):
@@ -22,20 +22,19 @@ class bbqqClassifer(torch.nn.Module):
         H_all = self.bert(input_ids, token_type_ids, attention_mask)[0]
         return H_all
 
-    def predict(self, X):
-        H_all = self.forward(X) # N, L, H
-        H_cls = H_all[:, 0, :] # 첫번째(cls)만 가져옴 (N,H)
-        y_hat = self.W_hy(H_cls)# N,H  H,3 -> N,3
-        return y_hat #N,3
+    def predict(self, X: torch.Tensor):
+        H_all = self.forward(X)
+        H_cls = H_all[:, 0, :]
+        y_hat = self.W_hy(H_cls)
+        return y_hat
 
-    def training_step(self, X, y):
+    def training_step(self, X: torch.Tensor, y: torch.Tensor):
         '''
         :param X:
         :param y:
         :return: loss
         '''
-        #y = torch.LongTensor(y)
         y_pred = self.predict(X)
-        # loss
+
         loss = F.cross_entropy(y_pred, y).sum()
         return loss
