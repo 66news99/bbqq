@@ -1,16 +1,13 @@
-from typing import List, Tuple
-
 import pandas as pd
 import torch
 from sklearn.model_selection import train_test_split
-from torch import optim
 from transformers import AutoTokenizer, AutoModel
 from torch.utils.data import DataLoader
 
-from bbqq.bbqqClassifer import bbqqClassifer
-from bbqq.Builder import Build_X, Build_y
-from bbqq.SimpleDataset import SimpleDataset
-from bbqq.train_test import train_test
+from bbqq.model.bbqqClassifer import bbqqClassifer
+from bbqq.model.Builder import Build_X, Build_y
+from bbqq.model.SimpleDataset import SimpleDataset
+from bbqq.model.train_test import train_test
 from transformers.optimization import get_cosine_schedule_with_warmup, AdamW
 
 

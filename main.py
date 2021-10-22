@@ -7,7 +7,7 @@ from typing import List, Tuple
 import torch
 from transformers import BertModel, BertTokenizer
 
-from bbqq.main import Build_X, Build_y
+from bbqq.model.main import Build_X, Build_y
 from torch.utils.data import Dataset
 
 model = BertModel.from_pretrained("monologg/kobert")

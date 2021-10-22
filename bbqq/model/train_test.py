@@ -1,7 +1,7 @@
 import torch
 from tqdm.autonotebook import tqdm
 
-from bbqq.f1_score import f1score
+from bbqq.model.f1_score import f1score
 from torch.nn import functional as F
 
 

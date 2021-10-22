@@ -1,8 +1,8 @@
 import torch
 from transformers import BertTokenizer
 
-from bbqq import bbqqClassifer
-from bbqq.Builder import Build_X
+from bbqq.model import bbqqClassifer
+from bbqq.model.Builder import Build_X
 
 
 class Analyser:
