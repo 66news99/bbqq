@@ -12,10 +12,7 @@ class bbqqClassifer(torch.nn.Module):
         self.to(device)
 
     def forward(self, X: torch.Tensor):
-        """
-        :param X:
-        :return:
-        """
+
         input_ids = X[:, 0]
         token_type_ids = X[:, 1]
         attention_mask = X[:, 2]
@@ -29,11 +26,7 @@ class bbqqClassifer(torch.nn.Module):
         return y_hat
 
     def training_step(self, X: torch.Tensor, y: torch.Tensor):
-        '''
-        :param X:
-        :param y:
-        :return: loss
-        '''
+
         y_pred = self.predict(X)
 
         loss = F.cross_entropy(y_pred, y).sum()

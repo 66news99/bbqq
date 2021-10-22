@@ -43,4 +43,4 @@ def train_test(EPOCHS=None, model=None, train_dataloader=None, test_dataloader=N
             test_f1 += f1score(y, max_indices)  # accuracy
         print(f"epoch {e_idx+1} test acc {test_f1/(b_idx+1)}" )
 
-    torch.save(model, 'model.pth')
+    # torch.save(model, 'model.pth')
