@@ -6,6 +6,8 @@
 
 
 ## 팀
-- 김태희
-- ...
-- supervised by: 김유빈
+- [김태희](https://github.com/hale-in)
+- [김준형](https://github.com/JururuK)
+- [류재원](https://github.com/MrRyuwon)
+- [정의형](https://github.com/ui-hyeong)
+- supervised by: [김유빈](https://github.com/eubinecto)
