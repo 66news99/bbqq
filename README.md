@@ -7,7 +7,7 @@
 2. 애플 "14일 스페셜 이벤트"...'아이폰 13' 공개할 듯
 
 출력: 따옴표 저널리즘 문제 유형 분류
-![출력예시](https://imgur.com/a/TZlR4xy)
+!(https://imgur.com/a/TZlR4xy)
 
 ## 아이디어 발상 동기
 
@@ -19,7 +19,8 @@
 
 ## 판단유보, 책임회피, 선정주의
 3개의 따옴표 저널리즘 문제 유형
-![유형 구분 참고: 이재경, 신문과 방송, 2019](https://imgur.com/YwqnF8A)
+!(https://imgur.com/YwqnF8A)
+
 [해당칼럼 원문 보기](https://m.blog.naver.com/kpfjra_/221560313479)
 
 
