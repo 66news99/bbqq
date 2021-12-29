@@ -7,7 +7,7 @@
 2. 애플 "14일 스페셜 이벤트"...'아이폰 13' 공개할 듯
 
 출력: 따옴표 저널리즘 문제 유형 분류
-<img scr="https://user-images.githubusercontent.com/78592027/147643909-59a9b0b4-5205-4e59-b97d-e90f1370b80e.png" />
+![출력](https://user-images.githubusercontent.com/78592027/147644281-c1f6e660-3ef6-447b-952b-7c692920e98e.png)
 
 ## 아이디어 발상 동기
 
