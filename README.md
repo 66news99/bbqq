@@ -19,7 +19,7 @@
 
 ## 판단유보, 책임회피, 선정주의
 3개의 따옴표 저널리즘 문제 유형
-<img scr="https://user-images.githubusercontent.com/78592027/147643772-4ea55b9b-4a02-46ad-9a21-33a73a8a695b.png" />
+![신문과방송합본](https://user-images.githubusercontent.com/78592027/147644177-8ed5cc4c-4dfa-4bb2-866a-ac26fb09a110.png)
 
 [해당칼럼 원문 보기](https://m.blog.naver.com/kpfjra_/221560313479)
 
