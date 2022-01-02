@@ -41,20 +41,19 @@
 
 3. 선정주의: 제목에 따옴표를 달면 독자는 아무 것도 없는 제목에 비해 시각적 자극을 강하게 느끼게 된다. 블라우 교수는 이러한 장치를 통해 기자는 자신의 주관적 관점을 독자에게 강요할 수 있다고 주장한다.
 
-[(이재경, 『신문과 방송』, 2019.06, p.102-103.) 해당칼럼 원문 보기](https://m.blog.naver.com/kpfjra_/221560313479)
+[이재경, 『신문과 방송』, 2019.06, p.102-103. 해당칼럼 원문 보기](https://m.blog.naver.com/kpfjra_/221560313479)
 ![신문과방송합본](https://user-images.githubusercontent.com/78592027/147644177-8ed5cc4c-4dfa-4bb2-866a-ac26fb09a110.png)
 
 
 ## 프로젝트 진행 과정
 
-1. 아이디어 제시 및 기획안 수정 과정: https://bit.ly/3JJXNE6
-2. 모델링 과정: 
+[아이디어 제시 및 기획안 수정 과정:](https://bit.ly/3JJXNE6)
 
 ## 웹 서비스 구현 
 1. 기획안 제출 단계 초기 UI 구상
 ![웹초기구상](https://user-images.githubusercontent.com/78592027/147867556-239674a7-e62e-41c4-aa7e-d7cd3abd9bf0.png)
 
-2. 웹 서비스 페이지
+2. 공모전 발표를 위한 웹 서비스 페이지
 ![웹](https://user-images.githubusercontent.com/78592027/147867492-0fe0ce9a-271e-4216-87b1-2aa411217b0a.png)
 
 
