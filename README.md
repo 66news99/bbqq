@@ -51,6 +51,10 @@
 2. 모델링 과정: 
 
 ## 웹 서비스 구현 
+1. 기획안 제출 단계 초기 UI 구상
+![웹초기구상](https://user-images.githubusercontent.com/78592027/147867556-239674a7-e62e-41c4-aa7e-d7cd3abd9bf0.png)
+
+2. 웹 서비스 페이지
 ![웹](https://user-images.githubusercontent.com/78592027/147867492-0fe0ce9a-271e-4216-87b1-2aa411217b0a.png)
 
 
